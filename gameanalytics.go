@@ -62,13 +62,11 @@ func (a *GameAnalytics) listen(server *ga.Server) {
 				log.Printf("[WARN] Event timestamp parsing failed %s (%v)", err, e)
 				continue
 			}
-			shared := &ga.DefaultAnnotations{
-				UserID:          e.UserID,
-				SessionID:       e.Session.UUID,
-				SessionNumber:   e.Session.Number,
-				ClientTimestamp: ts,
-			}
-			shared.DefaultsRequiredValues()
+			shared := ga.NewDefaultAnnotations()
+			shared.UserID = e.UserID
+			shared.SessionID = e.Session.UUID
+			shared.SessionNumber = e.Session.Number
+			shared.ClientTimestamp = ts
 			switch e.Type {
 			case "session_start":
 				user := ga.NewUserEvent(shared)
