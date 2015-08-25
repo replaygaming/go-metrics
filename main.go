@@ -67,6 +67,9 @@ func main() {
 		chans[i] = c
 	}
 
+	log.Printf("[INFO] start env=%s amqp-url=%s amqp-queue=%s", *env, *amqpURL,
+		*amqpQueue)
+
 	// Listen for incoming events
 	for m := range messages {
 		e := &Event{}
@@ -81,4 +84,5 @@ func main() {
 		m.Ack(false)
 	}
 	c.Done <- nil
+
 }
