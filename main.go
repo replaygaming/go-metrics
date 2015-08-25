@@ -11,6 +11,7 @@ import (
 var (
 	env         = flag.String("env", "development", "Environment: development or production")
 	amqpURL     = flag.String("amqp-url", "amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
+	amqpQueue   = flag.String("amqp-queue", "metrics", "AMQP Queue name")
 	gaGameKey   = flag.String("ga-game-key", "", "GameAnalytics GameKey")
 	gaSecretKey = flag.String("ga-secret-key", "", "GameAnalytics SecretKey")
 )
@@ -40,11 +41,11 @@ func init() {
 
 func main() {
 	// Start consumer queue
-	c, err := amqp.NewConsumer(*amqpURL, "metrics_ex", "fanout", "", "", "metrics")
+	c, err := amqp.NewConsumer(*amqpURL, "metrics_ex", "fanout", *amqpQueue, "", "metrics")
 	if err != nil {
 		log.Fatalf("[FATAL] AMQP consumer failed %s", err)
 	}
-	messages, err := c.Consume("")
+	messages, err := c.Consume(*amqpQueue)
 	if err != nil {
 		log.Fatalf("[FATAL] AMQP queue failed %s", err)
 	}
