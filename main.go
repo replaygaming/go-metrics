@@ -4,30 +4,19 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
+	"os"
 
 	amqp "github.com/replaygaming/amqp-consumer"
 )
 
 var (
-	env         = flag.String("env", "development", "Environment: development or production")
-	amqpURL     = flag.String("amqp-url", "amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
-	amqpQueue   = flag.String("amqp-queue", "metrics", "AMQP Queue name")
-	gaGameKey   = flag.String("ga-game-key", "", "GameAnalytics GameKey")
-	gaSecretKey = flag.String("ga-secret-key", "", "GameAnalytics SecretKey")
+	env             = flag.String("env", "development", "Environment: development or production")
+	amqpURL         = flag.String("amqp-url", "amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
+	amqpQueue       = flag.String("amqp-queue", "metrics", "AMQP Queue name")
+	gaGameKey       = flag.String("ga-game-key", "", "GameAnalytics GameKey")
+	gaSecretKey     = flag.String("ga-secret-key", "", "GameAnalytics SecretKey")
+	amplitudeAPIKey = flag.String("amplitude-api-key", "", "Amplitude API Key")
 )
-
-// Event contains the generic information received from Replay Poker
-type Event struct {
-	Version   uint
-	Type      string `json:"event"`
-	UserID    string `json:"user_id"`
-	Timestamp string
-	Session   struct {
-		UUID   string `json:"uuid"`
-		Number uint
-	}
-	Properties json.RawMessage
-}
 
 // Adapter is the interface required to start a new service to receive incoming
 // events and forward them to the correct API
@@ -56,7 +45,11 @@ func main() {
 		SecretKey:   *gaSecretKey,
 		Environment: *env,
 	}
-	adapters := []Adapter{ga}
+	amplitude := &Amplitude{
+		APIKey: *amplitudeAPIKey,
+	}
+
+	adapters := []Adapter{ga, amplitude}
 	chans := make([]chan<- Event, len(adapters))
 
 	for i, a := range adapters {
@@ -67,8 +60,7 @@ func main() {
 		chans[i] = c
 	}
 
-	log.Printf("[INFO] start env=%s amqp-url=%s amqp-queue=%s", *env, *amqpURL,
-		*amqpQueue)
+	log.Printf("[INFO] start %s", os.Args[1:])
 
 	// Listen for incoming events
 	for m := range messages {

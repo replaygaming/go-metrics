@@ -9,17 +9,6 @@ import (
 	"github.com/replaygaming/gameanalytics"
 )
 
-type sessionEndProperties struct {
-	Length int `json:"session_length"`
-}
-
-type chipsPurchaseProperties struct {
-	Amount   float64
-	Type     string
-	Provider string
-	Number   uint `json:"transaction_count"`
-}
-
 // GameAnalytics implements the adapter interface. It translates the events
 // received and forwards them to the GameAnalytics SDK server.
 type GameAnalytics struct {
@@ -35,10 +24,10 @@ func (a *GameAnalytics) Start() (chan<- Event, error) {
 	var server *ga.Server
 	if a.Environment == "production" {
 		server = ga.NewServer(a.GameKey, a.SecretKey)
-		log.Println("[INFO] Starting GameAnalytics in production mode")
+		log.Println("[INFO GAMEANALYTICS] Starting GameAnalytics in production mode")
 	} else {
 		server = ga.NewSandboxServer()
-		log.Println("[INFO] Starting GameAnalytics in sandbox mode")
+		log.Println("[INFO GAMEANALYTICS] Starting GameAnalytics in sandbox mode")
 	}
 	err := server.Start()
 	if err != nil {
@@ -54,12 +43,12 @@ func (a *GameAnalytics) listen(server *ga.Server) {
 	go func() {
 		for e := range a.events {
 			if e.Version != 1 {
-				log.Printf("[WARN] Event Version not supported %v", e)
+				log.Printf("[WARN GAMEANALYTICS] Event Version not supported %v", e)
 				continue
 			}
 			ts, err := a.getTimeDiff(e.Timestamp, server.TimestampOffset)
 			if err != nil {
-				log.Printf("[WARN] Event timestamp parsing failed %s (%v)", err, e)
+				log.Printf("[WARN GAMEANALYTICS] Event timestamp parsing failed %s (%v)", err, e)
 				continue
 			}
 			shared := ga.NewDefaultAnnotations()
@@ -73,10 +62,10 @@ func (a *GameAnalytics) listen(server *ga.Server) {
 				server.SendEvent(user)
 			case "session_end":
 				ended := ga.NewSessionEndEvent(shared)
-				s := &sessionEndProperties{}
+				s := &SessionEnd{}
 				err := json.Unmarshal(e.Properties, s)
 				if err != nil {
-					log.Printf("[WARN] JSON conversion failed %s (%q)", err,
+					log.Printf("[WARN GAMEANALYTICS] JSON conversion failed %s (%q)", err,
 						&e.Properties)
 					continue
 				}
@@ -84,10 +73,10 @@ func (a *GameAnalytics) listen(server *ga.Server) {
 				server.SendEvent(ended)
 			case "chips_purchase":
 				business := ga.NewBusinessEvent(shared)
-				c := &chipsPurchaseProperties{}
+				c := &ChipsPurchase{}
 				err := json.Unmarshal(e.Properties, c)
 				if err != nil {
-					log.Printf("[WARN] JSON conversion failed %s (%q)", err,
+					log.Printf("[WARN GAMEANALYTICS] JSON conversion failed %s (%q)", err,
 						&e.Properties)
 					continue
 				}
@@ -97,8 +86,10 @@ func (a *GameAnalytics) listen(server *ga.Server) {
 				business.CartType = c.Provider
 				business.TransactionNumber = c.Number
 				server.SendEvent(business)
+			case "tournament_registration":
+				//not implemented
 			default:
-				log.Printf("[WARN] Unknown event type %s (%v)", e.Type, e)
+				log.Printf("[WARN GAMEANALYTICS] Unknown event type %s (%v)", e.Type, e)
 			}
 		}
 	}()
@@ -108,7 +99,7 @@ func (a *GameAnalytics) getTimeDiff(ts string, offset int) (int, error) {
 	timestamp, err := time.Parse(time.RFC3339, ts)
 	if err != nil {
 		return 0,
-			fmt.Errorf("[WARN] Event timestamp parsing failed %s (%s)", ts, err)
+			fmt.Errorf("[WARN GAMEANALYTICS] Event timestamp parsing failed %s (%s)", ts, err)
 	}
 	now := int(timestamp.Unix())
 	diff := now - offset
