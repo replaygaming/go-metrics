@@ -38,9 +38,7 @@ func (a *Amplitude) listen(server *amplitude.Server) {
 			}
 			var err error
 			switch e.Type {
-			case "session_start":
-				//not implemented
-			case "session_end":
+			case "session_start", "session_end":
 				//not implemented
 			case "chips_purchase":
 				prop := &ChipsPurchase{}
@@ -51,7 +49,7 @@ func (a *Amplitude) listen(server *amplitude.Server) {
 				}
 				event.Revenue = prop.Amount
 				err = server.SendEvent(event)
-			case "tournament_registration":
+			case "tournament_registration", "hand_played":
 				if err := json.Unmarshal(e.Properties, &event.Properties); err != nil {
 					log.Printf("[WARN AMPLITUDE] JSON conversion failed %s (%q)", err,
 						&e.Properties)

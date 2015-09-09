@@ -86,7 +86,7 @@ func (a *GameAnalytics) listen(server *ga.Server) {
 				business.CartType = c.Provider
 				business.TransactionNumber = c.Number
 				server.SendEvent(business)
-			case "tournament_registration":
+			case "tournament_registration", "hand_played":
 				//not implemented
 			default:
 				log.Printf("[WARN GAMEANALYTICS] Unknown event type %s (%v)", e.Type, e)
