@@ -33,8 +33,8 @@ func (a *Amplitude) listen(server *amplitude.Server) {
 				continue
 			}
 			event := amplitude.Event{
-				Type:   e.Type,
-				UserID: e.UserID,
+				EventType: e.Type,
+				UserID:    e.UserID,
 			}
 			var err error
 			switch e.Type {
@@ -48,14 +48,14 @@ func (a *Amplitude) listen(server *amplitude.Server) {
 					continue
 				}
 				event.Revenue = prop.Amount
-				err = server.SendEvent(event)
+				_, err = server.SendEvent(event)
 			case "tournament_registration", "hand_played":
-				if err := json.Unmarshal(e.Properties, &event.Properties); err != nil {
+				if err := json.Unmarshal(e.Properties, &event.EventProperties); err != nil {
 					log.Printf("[WARN AMPLITUDE] JSON conversion failed %s (%q)", err,
 						&e.Properties)
 					continue
 				}
-				err = server.SendEvent(event)
+				_, err = server.SendEvent(event)
 			default:
 				log.Printf("[WARN AMPLITUDE] Unknown event type %s (%v)", e.Type, e)
 			}

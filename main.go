@@ -13,8 +13,6 @@ var (
 	env             = flag.String("env", "development", "Environment: development or production")
 	amqpURL         = flag.String("amqp-url", "amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
 	amqpQueue       = flag.String("amqp-queue", "metrics", "AMQP Queue name")
-	gaGameKey       = flag.String("ga-game-key", "", "GameAnalytics GameKey")
-	gaSecretKey     = flag.String("ga-secret-key", "", "GameAnalytics SecretKey")
 	amplitudeAPIKey = flag.String("amplitude-api-key", "", "Amplitude API Key")
 )
 
@@ -40,16 +38,11 @@ func main() {
 	}
 
 	// Start event adapters
-	ga := &GameAnalytics{
-		GameKey:     *gaGameKey,
-		SecretKey:   *gaSecretKey,
-		Environment: *env,
-	}
 	amplitude := &Amplitude{
 		APIKey: *amplitudeAPIKey,
 	}
 
-	adapters := []Adapter{ga, amplitude}
+	adapters := []Adapter{amplitude}
 	chans := make([]chan<- Event, len(adapters))
 
 	for i, a := range adapters {
@@ -76,5 +69,4 @@ func main() {
 		m.Ack(false)
 	}
 	c.Done <- nil
-
 }
