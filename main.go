@@ -7,6 +7,8 @@ import (
 	"os"
 
 	amqp "github.com/replaygaming/amqp-consumer"
+	"github.com/replaygaming/metrics/internal/amplitude"
+	"github.com/replaygaming/metrics/internal/event"
 )
 
 var (
@@ -19,7 +21,7 @@ var (
 // Adapter is the interface required to start a new service to receive incoming
 // events and forward them to the correct API
 type Adapter interface {
-	Start() (chan<- Event, error)
+	Start() (chan<- event.Event, error)
 }
 
 func init() {
@@ -38,12 +40,12 @@ func main() {
 	}
 
 	// Start event adapters
-	amplitude := &Amplitude{
+	a := &amplitude.Amplitude{
 		APIKey: *amplitudeAPIKey,
 	}
 
-	adapters := []Adapter{amplitude}
-	chans := make([]chan<- Event, len(adapters))
+	adapters := []Adapter{a}
+	chans := make([]chan<- event.Event, len(adapters))
 
 	for i, a := range adapters {
 		c, err := a.Start()
@@ -57,7 +59,7 @@ func main() {
 
 	// Listen for incoming events
 	for m := range messages {
-		e := &Event{}
+		e := &event.Event{}
 		err := json.Unmarshal(m.Body, e)
 		if err != nil {
 			log.Printf("[WARN] JSON conversion failed %s", err)

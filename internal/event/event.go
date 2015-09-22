@@ -1,4 +1,4 @@
-package main
+package event
 
 import "encoding/json"
 
@@ -15,11 +15,6 @@ type Event struct {
 	Properties json.RawMessage
 }
 
-// SessionEnd lists properties for 'session_end' event sent by Replay Poker
-type SessionEnd struct {
-	Length int `json:"session_length"`
-}
-
 // ChipsPurchase lists properties for 'chips_purchase' event sent by Replay
 // Poker
 type ChipsPurchase struct {
@@ -27,11 +22,4 @@ type ChipsPurchase struct {
 	Type     string
 	Provider string
 	Number   uint `json:"transaction_count"`
-}
-
-// TournamentRegistration lists properties for 'tournament_registration' event
-// sent by Replay Poker
-type TournamentRegistration struct {
-	Type string
-	Game string
 }
