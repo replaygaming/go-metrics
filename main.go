@@ -11,26 +11,24 @@ import (
 	"github.com/replaygaming/metrics/internal/event"
 )
 
-var (
-	env             = flag.String("env", "development", "Environment: development or production")
-	amqpURL         = flag.String("amqp-url", "amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
-	amqpQueue       = flag.String("amqp-queue", "metrics", "AMQP Queue name")
-	amplitudeAPIKey = flag.String("amplitude-api-key", "", "Amplitude API Key")
-)
-
 // Adapter is the interface required to start a new service to receive incoming
 // events and forward them to the correct API
 type Adapter interface {
 	Start() (chan<- event.Event, error)
 }
 
-func init() {
-	flag.Parse()
-}
-
 func main() {
+	var (
+		amqpURL = flag.String("amqp-url",
+			"amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
+		amqpQueue       = flag.String("amqp-queue", "metrics", "AMQP Queue name")
+		amplitudeAPIKey = flag.String("amplitude-api-key", "", "Amplitude API Key")
+	)
+	flag.Parse()
+
 	// Start consumer queue
-	c, err := amqp.NewConsumer(*amqpURL, "metrics_ex", "fanout", *amqpQueue, "", "metrics")
+	c, err := amqp.NewConsumer(*amqpURL, "metrics_ex", "fanout", *amqpQueue, "",
+		"metrics")
 	if err != nil {
 		log.Fatalf("[FATAL] AMQP consumer failed %s", err)
 	}

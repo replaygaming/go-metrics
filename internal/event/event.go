@@ -4,7 +4,6 @@ import "encoding/json"
 
 // Event contains the generic information received from Replay Poker
 type Event struct {
-	Version   uint
 	Type      string `json:"event"`
 	UserID    string `json:"user_id"`
 	Timestamp string
