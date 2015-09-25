@@ -38,9 +38,7 @@ func main() {
 	}
 
 	// Start event adapters
-	a := &amplitude.Amplitude{
-		APIKey: *amplitudeAPIKey,
-	}
+	a := amplitude.NewClient(*amplitudeAPIKey)
 
 	adapters := []Adapter{a}
 	chans := make([]chan<- event.Event, len(adapters))

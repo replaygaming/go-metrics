@@ -1,81 +1,65 @@
 package amplitude
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"time"
+	"os"
 
 	"github.com/replaygaming/amplitude"
 	"github.com/replaygaming/metrics/internal/event"
 )
 
+var logger = log.New(os.Stdout, "[AMPLITUDE] ", log.Lshortfile)
+
+type parsingError struct {
+	jsonErr error
+	blob    []byte
+}
+
+func (e parsingError) Error() string {
+	return fmt.Sprintf("JSON conversion failed %s (%q)", e.jsonErr, e.blob)
+}
+
+type notImplementedError struct {
+	eventType string
+}
+
+func (e notImplementedError) Error() string {
+	return fmt.Sprintf("Event type %s not implemented", e.eventType)
+}
+
 // Amplitude implements the adapter interface. It translates the events
 // received and forwards them to the Amplitude HTTP API.
 type Amplitude struct {
-	APIKey string
-	events chan event.Event
+	client  amplitude.Client
+	events  chan event.Event
+	batcher Batcher
+}
+
+// NewClient return a new Amplitude client with default values.
+func NewClient(apiKey string) *Amplitude {
+	c := amplitude.NewClient(apiKey)
+	return &Amplitude{
+		events:  make(chan event.Event),
+		batcher: NewBatcher(c),
+	}
 }
 
 // Start starts a new Amplitude client and prepares to receive incoming events.
 func (a *Amplitude) Start() (chan<- event.Event, error) {
-	var client *amplitude.Client
-	client = amplitude.NewClient(a.APIKey)
-	log.Println("[INFO AMPLITUDE] Starting Amplitude in production mode")
-	a.events = make(chan event.Event)
-	a.listen(client)
-	return a.events, nil
-}
-
-// listen receives incoming events and translate them to Amplitude.
-func (a *Amplitude) listen(client *amplitude.Client) {
+	logger.Println("[INFO] Starting Amplitude in production mode")
+	b := a.batcher
 	go func() {
-		b := newBatch(client)
-		tick := time.Tick(5 * time.Second)
-		for {
-			select {
-			case e := <-a.events:
-				event, err := newEvent(e)
-				if err != nil {
-					log.Printf("[AMPLITUDE WARN] %s", err)
-					continue
+		for e := range a.events {
+			event, err := newEvent(e)
+			if err != nil {
+				if _, ok := err.(notImplementedError); !ok {
+					logger.Printf("[WARN] %s", err)
 				}
-				b.Add(event)
-				if b.Full() {
-					go b.Send()
-					b = newBatch(client)
-				}
-			case <-tick:
-				go b.Send()
-				b = newBatch(client)
+				continue
 			}
+			b.Batch(event)
 		}
 	}()
-}
-
-func newEvent(in event.Event) (amplitude.Event, error) {
-	out := amplitude.Event{
-		EventType: in.Type,
-		UserID:    in.UserID,
-	}
-	switch in.Type {
-	case "chips_purchase":
-		prop := &event.ChipsPurchase{}
-		if err := json.Unmarshal(in.Properties, prop); err != nil {
-			err = fmt.Errorf("JSON conversion failed %s (%q)", err, &in.Properties)
-			return out, err
-		}
-		out.Revenue = prop.Amount
-	case "tournament_registration", "hand_played":
-		if err := json.Unmarshal(in.Properties, &out.EventProperties); err != nil {
-			err = fmt.Errorf("JSON conversion failed %s (%q)", err, &in.Properties)
-			return out, err
-		}
-	case "session_start", "session_end":
-		//not implemented
-	default:
-		err := fmt.Errorf("Unknown event type %s (%v)", in.Type, in)
-		return out, err
-	}
-	return out, nil
+	return a.events, nil
 }
