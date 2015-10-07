@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/replaygaming/amplitude"
-	"github.com/replaygaming/metrics/internal/event"
+	"github.com/replaygaming/go-metrics/internal/event"
 )
 
 var logger = log.New(os.Stdout, "[AMPLITUDE] ", log.Lshortfile)

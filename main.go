@@ -7,8 +7,8 @@ import (
 	"os"
 
 	amqp "github.com/replaygaming/amqp-consumer"
-	"github.com/replaygaming/metrics/internal/amplitude"
-	"github.com/replaygaming/metrics/internal/event"
+	"github.com/replaygaming/go-metrics/internal/amplitude"
+	"github.com/replaygaming/go-metrics/internal/event"
 )
 
 // Adapter is the interface required to start a new service to receive incoming

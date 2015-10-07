@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/replaygaming/metrics/internal/event"
+	"github.com/replaygaming/go-metrics/internal/event"
 )
 
 func TestNewEvent_GenericEvent(t *testing.T) {

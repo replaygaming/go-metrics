@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/replaygaming/amplitude"
-	"github.com/replaygaming/metrics/internal/event"
+	"github.com/replaygaming/go-metrics/internal/event"
 )
 
 var testKey = "abcde"

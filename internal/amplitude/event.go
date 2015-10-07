@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/replaygaming/amplitude"
-	"github.com/replaygaming/metrics/internal/event"
+	"github.com/replaygaming/go-metrics/internal/event"
 )
 
 func newEvent(in event.Event) (amplitude.Event, error) {
