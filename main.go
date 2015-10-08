@@ -1,20 +1,18 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"log"
 	"os"
 
 	amqp "github.com/replaygaming/amqp-consumer"
 	"github.com/replaygaming/go-metrics/internal/amplitude"
-	"github.com/replaygaming/go-metrics/internal/event"
 )
 
 // Adapter is the interface required to start a new service to receive incoming
 // events and forward them to the correct API
 type Adapter interface {
-	Start() (chan<- event.Event, error)
+	Start() (chan<- []byte, error)
 }
 
 func main() {
@@ -41,7 +39,7 @@ func main() {
 	a := amplitude.NewClient(*amplitudeAPIKey)
 
 	adapters := []Adapter{a}
-	chans := make([]chan<- event.Event, len(adapters))
+	chans := make([]chan<- []byte, len(adapters))
 
 	for i, a := range adapters {
 		c, err := a.Start()
@@ -55,14 +53,8 @@ func main() {
 
 	// Listen for incoming events
 	for m := range messages {
-		e := &event.Event{}
-		err := json.Unmarshal(m.Body, e)
-		if err != nil {
-			log.Printf("[WARN] JSON conversion failed %s", err)
-		} else {
-			for _, c := range chans {
-				c <- *e
-			}
+		for _, c := range chans {
+			c <- m.Body
 		}
 		m.Ack(false)
 	}

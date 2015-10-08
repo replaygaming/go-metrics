@@ -1,33 +1,11 @@
 package amplitude
 
 import (
-	"errors"
 	"testing"
 	"time"
-
-	"github.com/replaygaming/amplitude"
-	"github.com/replaygaming/go-metrics/internal/event"
 )
 
 var testKey = "abcde"
-
-func TestParsingError_Error(t *testing.T) {
-	err := parsingError{jsonErr: errors.New("Invalid character"), blob: []byte("P}")}
-	expected := `JSON conversion failed Invalid character ("P}")`
-	result := err.Error()
-	if expected != result {
-		t.Errorf("Expected error to be %s\ngot %s", expected, result)
-	}
-}
-
-func TestNotImplementedError_Error(t *testing.T) {
-	err := notImplementedError{eventType: "tournament_registration"}
-	expected := "Event type tournament_registration not implemented"
-	result := err.Error()
-	if expected != result {
-		t.Errorf("Expected error to be %s\ngot %s", expected, result)
-	}
-}
 
 func TestNewClient(t *testing.T) {
 	a := NewClient(testKey)
@@ -40,22 +18,22 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestAmplitude_Start(t *testing.T) {
-	e := event.Event{Type: "hand_played", Properties: []byte(`{"GameID":"2"}`)}
+	e := []byte(`{"event_type":"test","user_id":"1234"}`)
 	c := &delayedClient{}
 	c.wg.Add(1)
 	b := &TimeoutBatcher{
 		client:    c,
 		queueSize: 1,
 		timeout:   1 * time.Nanosecond,
-		in:        make(chan amplitude.Event),
+		in:        make(chan []byte),
 	}
 	b.start()
 	a := &Amplitude{
-		events:  make(chan event.Event),
+		events:  make(chan []byte),
 		batcher: b,
 	}
 	a.Start()
-	a.events <- event.Event{}
+	a.events <- []byte("")
 	a.events <- e
 	c.wg.Wait()
 }

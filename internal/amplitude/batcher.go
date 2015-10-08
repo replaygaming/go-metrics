@@ -1,44 +1,67 @@
 package amplitude
 
 import (
+	"bytes"
 	"time"
 
 	"github.com/replaygaming/amplitude"
 )
 
+// Queue implents the amplitude.Payload interface.
+type Queue [][]byte
+
+// Key returns events.
+func (Queue) Key() string {
+	return "events"
+}
+
+// Value combine all payload received into a json array.
+func (q Queue) Value() ([]byte, error) {
+	vals := [][]byte{
+		[]byte("["),
+		bytes.Join(q, []byte(",")),
+		[]byte("]"),
+	}
+	return bytes.Join(vals, nil), nil
+}
+
+// NewQueue creates a new queue with the size passed.
+func NewQueue(size int) Queue {
+	return make(Queue, 0, size)
+}
+
 // Batcher interface
 type Batcher interface {
-	Batch(amplitude.Event)
+	Batch([]byte)
 }
 
 // TimeoutBatcher implements the batcher interface using a fixed queue size and
 // a timeout limit. When either is reached, the batch is sent to the client.
 type TimeoutBatcher struct {
 	client    amplitude.Client
-	events    []amplitude.Event
-	in        chan (amplitude.Event)
+	in        chan []byte
 	queueSize int
 	timeout   time.Duration
 }
 
-// Send calls the client SendEvent immediately with the events already in the
-// batch.
-func (b *TimeoutBatcher) send(e []amplitude.Event) {
-	if _, err := b.client.SendEvent(e...); err != nil {
+// Send calls the client Send immediately with the events already in the batch.
+func (b *TimeoutBatcher) send(q Queue) {
+	if _, err := b.client.Send(q); err != nil {
 		logger.Printf("[ERROR] %s", err)
 	}
 }
 
 // Batch adds the event to the queue and automatically sends it once the batch
 // in full or the timeout is reached.
-func (b *TimeoutBatcher) Batch(e amplitude.Event) {
+func (b *TimeoutBatcher) Batch(e []byte) {
 	go func() {
 		b.in <- e
 	}()
 }
 
 func (b *TimeoutBatcher) start() {
-	queue := b.newQueue()
+	size := b.queueSize
+	queue := NewQueue(size)
 	tick := time.Tick(b.timeout)
 	go func() {
 		for {
@@ -47,20 +70,16 @@ func (b *TimeoutBatcher) start() {
 				queue = append(queue, e)
 				if len(queue) == b.queueSize {
 					b.send(queue)
-					queue = b.newQueue()
+					queue = NewQueue(size)
 				}
 			case <-tick:
 				if len(queue) > 0 {
 					b.send(queue)
-					queue = b.newQueue()
+					queue = NewQueue(size)
 				}
 			}
 		}
 	}()
-}
-
-func (b *TimeoutBatcher) newQueue() []amplitude.Event {
-	return make([]amplitude.Event, 0, b.queueSize)
 }
 
 // NewBatcher returns a TimeoutBatcher with a timeout of 5 seconds and a batch
@@ -70,7 +89,7 @@ func NewBatcher(c amplitude.Client) *TimeoutBatcher {
 		client:    c,
 		queueSize: 10,
 		timeout:   5 * time.Second,
-		in:        make(chan amplitude.Event),
+		in:        make(chan []byte),
 	}
 	b.start()
 	return b
