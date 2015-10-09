@@ -1,7 +1,8 @@
-# Game metrics service [![Build Status](https://semaphoreci.com/api/v1/projects/d5505766-a62a-42b6-9098-089733d96265/516903/badge.svg)](https://semaphoreci.com/paulgould/metrics)
+# Game metrics service
+[![Build Status](https://semaphoreci.com/api/v1/projects/dba15a7d-a543-4860-b8c0-a6b64d15b840/563329/shields_badge.svg)](https://semaphoreci.com/paulgould/go-metrics) [![Coverage Status](https://coveralls.io/repos/replaygaming/go-metrics/badge.svg?branch=master&service=github)](https://coveralls.io/github/replaygaming/go-metrics?branch=master)
 
 Translates Replay Poker events and forward them to 3rd-party APIs
 
 ## Integrations supported
 
-  - [ ] [Amplitude](http://www.amplitude.com) - **in progress**
+  - [x] [Amplitude](http://www.amplitude.com)
