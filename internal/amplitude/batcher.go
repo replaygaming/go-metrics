@@ -10,13 +10,8 @@ import (
 // Queue implents the amplitude.Payload interface.
 type Queue [][]byte
 
-// Key returns events.
-func (Queue) Key() string {
-	return "events"
-}
-
-// Value combine all payload received into a json array.
-func (q Queue) Value() ([]byte, error) {
+// Encode combine all payload received into a json array.
+func (q Queue) Encode() ([]byte, error) {
 	vals := [][]byte{
 		[]byte("["),
 		bytes.Join(q, []byte(",")),

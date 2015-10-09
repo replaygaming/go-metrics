@@ -25,18 +25,11 @@ func TestNewQueue(t *testing.T) {
 	}
 }
 
-func TestQueue_Key(t *testing.T) {
-	var q Queue
-	if q.Key() != "events" {
-		t.Error("Wrong key for queue payload")
-	}
-}
-
-func TestQueue_Value(t *testing.T) {
+func TestQueue_Encode(t *testing.T) {
 	q := NewQueue(2)
 	q = append(q, []byte(`{"even_type":"hand_played"}`))
 	expected := []byte(`[{"even_type":"hand_played"}]`)
-	result, _ := q.Value()
+	result, _ := q.Encode()
 
 	if !bytes.Equal(expected, result) {
 		t.Errorf("Expected single queue value to equal %q\ngot: %q", expected, result)
@@ -44,14 +37,14 @@ func TestQueue_Value(t *testing.T) {
 
 	q = append(q, []byte(`{"even_type":"purchase"}`))
 	expected = []byte(`[{"even_type":"hand_played"},{"even_type":"purchase"}]`)
-	result, _ = q.Value()
+	result, _ = q.Encode()
 	if !bytes.Equal(expected, result) {
 		t.Errorf("Expected single queue value to equal %q\ngot: %q", expected, result)
 	}
 }
 
 func (c *delayedClient) Send(p amplitude.Payload) ([]byte, error) {
-	c.payload, _ = p.Value()
+	c.payload, _ = p.Encode()
 	if !bytes.Equal(c.payload, []byte("[]")) {
 		c.wg.Done()
 	}
