@@ -7,7 +7,7 @@ import (
 	"github.com/replaygaming/amplitude"
 )
 
-var logger = log.New(os.Stdout, "[AMPLITUDE] ", log.Lshortfile)
+var logger = log.New(os.Stdout, "[AMPLITUDE] ", 0)
 
 // Amplitude implements the adapter interface. It forwards events to the
 // Amplitude HTTP API.

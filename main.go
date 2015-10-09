@@ -9,6 +9,8 @@ import (
 	"github.com/replaygaming/go-metrics/internal/amplitude"
 )
 
+var logger = log.New(os.Stdout, "[METRICS] ", 0)
+
 // Adapter is the interface required to start a new service to receive incoming
 // events and forward them to the correct API
 type Adapter interface {
@@ -28,11 +30,11 @@ func main() {
 	c, err := amqp.NewConsumer(*amqpURL, "metrics_ex", "fanout", *amqpQueue, "",
 		"metrics")
 	if err != nil {
-		log.Fatalf("[FATAL] AMQP consumer failed %s", err)
+		logger.Fatalf("[FATAL] AMQP consumer failed %s", err)
 	}
 	messages, err := c.Consume(*amqpQueue)
 	if err != nil {
-		log.Fatalf("[FATAL] AMQP queue failed %s", err)
+		logger.Fatalf("[FATAL] AMQP queue failed %s", err)
 	}
 
 	// Start event adapters
@@ -44,12 +46,12 @@ func main() {
 	for i, a := range adapters {
 		c, err := a.Start()
 		if err != nil {
-			log.Fatalf("[FATAL] Adapter failed to start %s", err)
+			logger.Fatalf("[FATAL] Adapter failed to start %s", err)
 		}
 		chans[i] = c
 	}
 
-	log.Printf("[INFO] start %s", os.Args[1:])
+	logger.Printf("[INFO] Starting metrics service %s", os.Args[1:])
 
 	// Listen for incoming events
 	for m := range messages {
