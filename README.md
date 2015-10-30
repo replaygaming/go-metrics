@@ -45,7 +45,7 @@ Declare the host and exchange for the metrics
 
     rabbitmqadmin declare vhost name=metrics
     rabbitmqadmin declare permission vhost=metrics user=guest configure=".*" write=".*" read=".*"
-    rabbitmqadmin -V metrics declare exchange name=es_ex type=fanout durable=true
+    rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=true
 
 ## Contribuing
 
