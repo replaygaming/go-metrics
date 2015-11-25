@@ -4,7 +4,9 @@ import (
 	"flag"
 	"log"
 	"os"
+	"runtime"
 
+	"github.com/paulsmith/newrelic-go-agent/newrelic"
 	amqp "github.com/replaygaming/amqp-consumer"
 	"github.com/replaygaming/go-metrics/internal/amplitude"
 )
@@ -23,6 +25,8 @@ func main() {
 			"amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
 		amqpQueue       = flag.String("amqp-queue", "metrics", "AMQP Queue name")
 		amplitudeAPIKey = flag.String("amplitude-api-key", "", "Amplitude API Key")
+		newRelicKey     = flag.String("newrelic-license", "", "NewRelic License Key")
+		newRelicApp     = flag.String("newrelic-app", "", "NewRelic App Name")
 	)
 	flag.Parse()
 
@@ -36,6 +40,9 @@ func main() {
 	if err != nil {
 		logger.Fatalf("[FATAL] AMQP queue failed %s", err)
 	}
+
+	// NewRelic Setup
+	newrelic.Init(*newRelicKey, *newRelicApp, "Go", runtime.Version())
 
 	// Start event adapters
 	a := amplitude.NewClient(*amplitudeAPIKey)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"time"
 
+	"github.com/paulsmith/newrelic-go-agent/newrelic"
 	"github.com/replaygaming/amplitude"
 )
 
@@ -41,9 +42,12 @@ type TimeoutBatcher struct {
 
 // Send calls the client Send immediately with the events already in the batch.
 func (b *TimeoutBatcher) send(q Queue) {
+	txnID := newrelic.BeginTransaction()
+	newrelic.SetTransactionName(txnID, "batch")
 	if _, err := b.client.Send(q); err != nil {
 		logger.Printf("[ERROR] %s", err)
 	}
+	newrelic.EndTransaction(txnID)
 }
 
 // Batch adds the event to the queue and automatically sends it once the batch
