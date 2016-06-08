@@ -7,13 +7,38 @@ Translates Replay Poker events and forward them to 3rd-party APIs
 
   - [x] [Amplitude](http://www.amplitude.com)
 
-
 ## Usage
 
+### Pre-built Binary
 Get the latest binary for your [distribution](https://github.com/replaygaming/go-metrics/releases)
 
+### Building from source
+
+####  Get project dependencies
+
 ```shell
-./bin/metrics_linux_amd64 -h
+export GOPATH=~/go
+go get github.com/replaygaming/go-metrics
+cd ~/go/src/github.com/replaygaming/go-metrics
+go get .
+```
+
+#### Compile
+
+```
+go build
+```
+
+#### Run
+
+```shell
+./go-metrics
+```
+
+Get help
+
+```shell
+./go-metrics -h
 
 Usage of ./bin/metrics_linux_amd64:
   -amplitude-api-key string
@@ -22,7 +47,6 @@ Usage of ./bin/metrics_linux_amd64:
         AMQP Queue name (default "metrics")
   -amqp-url string
         AMQP URL (default "amqp://guest:guest@localhost:5672/metrics")
-        
 ```
 
 ## Configure RabbitMQ
@@ -47,17 +71,6 @@ Declare the host and exchange for the metrics
     rabbitmqadmin declare permission vhost=metrics user=guest configure=".*" write=".*" read=".*"
     rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=true
 
-## Contribuing
+## Contributing
 
-### Install `go`
-
-Follow the instructions at [Golang.org](https://golang.org). **DO NOT** install using your distro pkg manager.
-
-### Get project dependencies
-
-    go get .
-
-### Running 
-
-    go build
-    ./go-metrics
+We would love to see contributions from the community. Please feel free to raise an issue or send your PR to this Github project.
