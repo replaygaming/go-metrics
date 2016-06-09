@@ -1,5 +1,5 @@
 - service: compile
-  command: cp /go/src/github.com/replaygaming/go-matrics/go-matrics /artifacts
+  command: cp /go/src/github.com/replaygaming/go-metrics/go-metrics /artifacts
   cached: true
   dockercfg_service: gcr_dockercfg
 
@@ -11,19 +11,19 @@
   type: parallel
   steps:
   - type: push
-    image_name: us.gcr.io/replay-gaming/go-matrics
+    image_name: us.gcr.io/replay-gaming/go-metrics
     image_tag: "latest"
     registry: https://us.gcr.io
     dockercfg_service: gcr_dockercfg
 
   - type: push
-    image_name: us.gcr.io/replay-gaming/go-matrics
+    image_name: us.gcr.io/replay-gaming/go-metrics
     image_tag: "{{.Timestamp}}"
     registry: https://us.gcr.io
     dockercfg_service: gcr_dockercfg
 
   - type: push
-    image_name: us.gcr.io/replay-gaming/go-matrics
+    image_name: us.gcr.io/replay-gaming/go-metrics
     image_tag: "{{.CommitID}}"
     registry: https://us.gcr.io
     dockercfg_service: gcr_dockercfg

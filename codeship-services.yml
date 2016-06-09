@@ -5,12 +5,12 @@ gcr_dockercfg:
 
 compile:
   build:
-    image: us.gcr.io/replay-gaming/go-matrics-compile
+    image: us.gcr.io/replay-gaming/go-metrics-compile
     dockerfile_path: Dockerfile.build
   volumes:
     - ./tmp:/artifacts
 
 dist:
   build:
-    image: us.gcr.io/replay-gaming/go-matrics
+    image: us.gcr.io/replay-gaming/go-metrics
     dockerfile_path: Dockerfile.dist
