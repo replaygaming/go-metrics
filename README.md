@@ -25,7 +25,7 @@ go get .
 
 #### Compile
 
-```
+```shell
 go build
 ```
 
@@ -58,13 +58,13 @@ rabbitmqadmin is binary, found as part of [rabbitmq-management](https://github.c
 ### Enable the management plugin:
 Enable rabbitmq_management plugin.
 
-```
+```shell
     [sudo] rabbitmq-plugins enable rabbitmq_management
 ```
 
 Then (re)start the rabbitmq daemon.
 
-```
+```shell
     [sudo] sudo rabbitmqctl stop
     [sudo] rabbitmq-server -detached
 ```
