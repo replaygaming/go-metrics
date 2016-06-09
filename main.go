@@ -41,6 +41,8 @@ func init() {
 }
 
 func main() {
+	logger.Printf("[INFO] Starting Service")
+
 	// Start consumer queue
 	// NewConsumer(amqpURI, exchange, exchangeType, queueName, key, ctag string) (*Consumer, error)
 	c, err := amqp.NewConsumer(amqpURL, "metrics_ex", "fanout", amqpQueue, "", "metrics")
@@ -67,7 +69,7 @@ func main() {
 		channels[i] = c
 	}
 
-	logger.Printf("[INFO] Starting Service")
+	logger.Printf("[INFO] Service Started")
 
 	// Listen for incoming events
 	for m := range messages {
