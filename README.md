@@ -29,13 +29,9 @@ go get .
 go build
 ```
 
-#### Run
-
-```shell
-./go-metrics
-```
-
 #### Configuration
+
+Configuration is done using environment variables.
 
 ```shell
 # AMQP URL (for example "amqp://guest:guest@127.0.0.1:5672/metrics")
@@ -48,14 +44,21 @@ AMQP_QUEUE
 AMPLITUDE_API_KEY
 ```
 
+#### Run
+
+```shell
+AMQP_URL=<url> AMQP_QUEUE=<queue> AMPLITUDE_API_KEY=<key> ./go-metrics
+```
+
 ## Configure RabbitMQ
 
 ### Install `rabbitmq` and `rabbitmqadmin`
 
-Download and installation guide from [RabbitMQ site](https://www.rabbitmq.com/download.html).
-rabbitmqadmin is binary, found as part of [rabbitmq-management](https://github.com/rabbitmq/rabbitmq-management) project.
+Download and install RabbitMQ from [official RabbitMQ site](https://www.rabbitmq.com/download.html).
+rabbitmqadmin is binary, found as part of [rabbitmq-management project](https://github.com/rabbitmq/rabbitmq-management).
 
-### Enable the management plugin:
+### Enable RabbitMQ Management plugin:
+
 Enable rabbitmq_management plugin.
 
 ```shell
