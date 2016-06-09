@@ -5,7 +5,7 @@ Translates Replay Poker events and forward them to 3rd-party APIs
 
 ## Integrations supported
 
-  - [x] [Amplitude](http://www.amplitude.com)
+  - [Amplitude](http://www.amplitude.com)
 
 ## Usage
 
