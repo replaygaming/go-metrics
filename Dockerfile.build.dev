@@ -6,9 +6,7 @@ RUN apk add --update go
 RUN apk add --update git
 
 ENV GOPATH /go
-
 RUN go get github.com/replaygaming/go-metrics
-
 ENV SRCROOT /go/src/github.com/replaygaming/go-metrics
 
 WORKDIR ${SRCROOT}
@@ -16,6 +14,6 @@ WORKDIR ${SRCROOT}
 ADD *.go ${SRCROOT}
 ADD internal ${SRCROOT}
 
-RUN go build -o go-metrics
+RUN go build
 
 CMD ./go-metrics
