@@ -56,6 +56,7 @@ Download and installation guide from [RabbitMQ site](https://www.rabbitmq.com/do
 rabbitmqadmin is binary, found as part of [rabbitmq-management](https://github.com/rabbitmq/rabbitmq-management) project.
 
 ### Enable the management plugin:
+Enable rabbitmq_management plugin.
 
     [sudo] rabbitmq-plugins enable rabbitmq_management
 
