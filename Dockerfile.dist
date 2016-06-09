@@ -1,0 +1,7 @@
+FROM alpine:3.2
+
+RUN apk add --update ca-certificates
+
+ADD ./bin/go-metrics /go-metrics
+
+CMD /go-metrics
