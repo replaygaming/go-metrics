@@ -35,18 +35,17 @@ go build
 ./go-metrics
 ```
 
-Get help
+#### Configuration
 
 ```shell
-./go-metrics -h
+# AMQP URL (for example "amqp://guest:guest@127.0.0.1:5672/metrics")
+AMQP_URL
 
-Usage of ./bin/metrics_linux_amd64:
-  -amplitude-api-key string
-        Amplitude API Key
-  -amqp-queue string
-        AMQP Queue name (default "metrics")
-  -amqp-url string
-        AMQP URL (default "amqp://guest:guest@localhost:5672/metrics")
+# AMQP Queue name (for example "metrics")
+AMQP_QUEUE
+
+# Amplitude API key
+AMPLITUDE_API_KEY
 ```
 
 ## Configure RabbitMQ
