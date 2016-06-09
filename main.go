@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"os"
 
@@ -17,45 +16,62 @@ type Adapter interface {
 	Start() (chan<- []byte, error)
 }
 
-func main() {
-	var (
-		amqpURL = flag.String("amqp-url",
-			"amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
-		amqpQueue       = flag.String("amqp-queue", "metrics", "AMQP Queue name")
-		amplitudeAPIKey = flag.String("amplitude-api-key", "", "Amplitude API Key")
-	)
-	flag.Parse()
+var (
+	amqpURL         string
+	amqpQueue       string
+	amplitudeAPIKey string
+)
 
+func warn(message string, err error) {
+	logger.Printf("[WARN] %s: %s", message, err)
+}
+
+func fatal(message string, err error) {
+	logger.Fatalf("[FATAL] %s: %s", message, err)
+}
+
+func init() {
+	logger.Printf("[INFO] Initializing App")
+
+	amqpURL = os.Getenv("AMQP_URL")
+	amqpQueue = os.Getenv("AMQP_QUEUE")
+	amplitudeAPIKey = os.Getenv("AMPLITUDE_API_KEY")
+
+	logger.Printf("[INFO] INIT - AMPQ URL = %s, AMQP Queue = %s, Amplitude API Key = %s", amqpURL, amqpQueue, amplitudeAPIKey)
+}
+
+func main() {
 	// Start consumer queue
-	c, err := amqp.NewConsumer(*amqpURL, "metrics_ex", "fanout", *amqpQueue, "",
-		"metrics")
+	// NewConsumer(amqpURI, exchange, exchangeType, queueName, key, ctag string) (*Consumer, error)
+	c, err := amqp.NewConsumer(amqpURL, "metrics_ex", "fanout", amqpQueue, "", "metrics")
 	if err != nil {
-		logger.Fatalf("[FATAL] AMQP consumer failed %s", err)
+		fatal("AMQP Consumer Failed", err)
 	}
-	messages, err := c.Consume(*amqpQueue)
+
+	messages, err := c.Consume(amqpQueue)
 	if err != nil {
-		logger.Fatalf("[FATAL] AMQP queue failed %s", err)
+		fatal("AMQP Queue Failed", err)
 	}
 
 	// Start event adapters
-	a := amplitude.NewClient(*amplitudeAPIKey)
+	a := amplitude.NewClient(amplitudeAPIKey)
 
 	adapters := []Adapter{a}
-	chans := make([]chan<- []byte, len(adapters))
+	channels := make([]chan<- []byte, len(adapters))
 
 	for i, a := range adapters {
 		c, err := a.Start()
 		if err != nil {
 			logger.Fatalf("[FATAL] Adapter failed to start %s", err)
 		}
-		chans[i] = c
+		channels[i] = c
 	}
 
-	logger.Printf("[INFO] Starting metrics service %s", os.Args[1:])
+	logger.Printf("[INFO] Starting Service")
 
 	// Listen for incoming events
 	for m := range messages {
-		for _, c := range chans {
+		for _, c := range channels {
 			c <- m.Body
 		}
 		m.Ack(false)
