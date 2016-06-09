@@ -84,19 +84,19 @@ rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=tr
 
 ### Go
 
-[Go Installation](https://golang.org/doc/install)
-[Go Code Documentation](https://golang.org/doc/code.html)
-[Go + Docker](https://blog.golang.org/docker)
+- [Go Installation](https://golang.org/doc/install)
+- [Go Code Documentation](https://golang.org/doc/code.html)
+- [Go + Docker](https://blog.golang.org/docker)
 
 ### Docker
 
-[Docker Installation](https://docs.docker.com/engine/installation/)
-[Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
+- [Docker Installation](https://docs.docker.com/engine/installation/)
+- [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
 
 ### Codeship
 
-[Codeship Steps Configuration](https://codeship.com/documentation/docker/steps/)
-[Codeship Services Configuration](https://codeship.com/documentation/docker/services/)
+- [Codeship Steps Configuration](https://codeship.com/documentation/docker/steps/)
+- [Codeship Services Configuration](https://codeship.com/documentation/docker/services/)
 
 ## Contributing
 
