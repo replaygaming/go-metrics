@@ -58,18 +58,42 @@ rabbitmqadmin is binary, found as part of [rabbitmq-management](https://github.c
 ### Enable the management plugin:
 Enable rabbitmq_management plugin.
 
+```
     [sudo] rabbitmq-plugins enable rabbitmq_management
+```
 
 Then (re)start the rabbitmq daemon.
 
+```
     [sudo] sudo rabbitmqctl stop
     [sudo] rabbitmq-server -detached
+```
 
 Declare the host and exchange for the metrics
 
-    rabbitmqadmin declare vhost name=metrics
-    rabbitmqadmin declare permission vhost=metrics user=guest configure=".*" write=".*" read=".*"
-    rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=true
+```shell
+rabbitmqadmin declare vhost name=metrics
+rabbitmqadmin declare permission vhost=metrics user=guest configure=".*" write=".*" read=".*"
+rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=true
+```
+
+## Development Resources
+
+### Go
+
+[Go Installation](https://golang.org/doc/install)
+[Go Code Documentation](https://golang.org/doc/code.html)
+[Go + Docker](https://blog.golang.org/docker)
+
+### Docker
+
+[Docker Installation](https://docs.docker.com/engine/installation/)
+[Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
+
+### Codeship
+
+[Codeship Steps Configuration](https://codeship.com/documentation/docker/steps/)
+[Codeship Services Configuration](https://codeship.com/documentation/docker/services/)
 
 ## Contributing
 
