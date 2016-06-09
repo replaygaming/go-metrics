@@ -16,4 +16,4 @@ WORKDIR ${SRCROOT}
 ADD *.go ${SRCROOT}
 ADD internal ${SRCROOT}
 
-RUN go build
+RUN go build -o go-metrics
