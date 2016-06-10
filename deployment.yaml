@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: metrics
-        image: us.gcr.io/replay-gaming/go-metrics:SOMESHA
+        image: us.gcr.io/replay-gaming/go-metrics
         env:
         - name: METRICS_USER
           valueFrom:
