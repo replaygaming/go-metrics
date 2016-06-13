@@ -23,15 +23,15 @@ spec:
             secretKeyRef:
               name: metrics
               key: password
-        - name: "AMPLITUDE_API_KEY"
+        - name: AMPLITUDE_API_KEY
           valueFrom:
             secretKeyRef:
               name: metrics
-              key: amplitude_api_key
-        - name: "AMQP_URL"
-          value: "amqp://$(METRICS_USER):$(METRICS_PASSWORD)@$(RABBITMQ_SERVICE_HOST):$(RABBITMQ_SERVICE_PORT)/metrics"
-        - name: "AMQP_QUEUE"
-          value: "metrics"
+              key: amplitude-api-key
+        - name: AMQP_URL
+          value: amqp://$(METRICS_USER):$(METRICS_PASSWORD)@$(RABBITMQ_SERVICE_HOST):$(RABBITMQ_SERVICE_PORT)/metrics
+        - name: AMQP_QUEUE
+          value: metrics
         resources:
           limits:
-            cpu: "0.1"
+            cpu: 0.1
