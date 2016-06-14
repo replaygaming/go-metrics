@@ -28,7 +28,7 @@ func NewClient(apiKey string) *Amplitude {
 
 // Start starts a new Amplitude client and prepares to receive incoming events.
 func (a *Amplitude) Start() (chan<- []byte, error) {
-	logger.Println("[INFO] Starting Amplitude in production mode")
+	logger.Println("[INFO] Starting Client")
 	b := a.batcher
 	go func() {
 		for e := range a.events {

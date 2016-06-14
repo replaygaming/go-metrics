@@ -5,59 +5,99 @@ Translates Replay Poker events and forward them to 3rd-party APIs
 
 ## Integrations supported
 
-  - [x] [Amplitude](http://www.amplitude.com)
-
+  - [Amplitude](http://www.amplitude.com)
 
 ## Usage
 
+### Pre-built Binary
 Get the latest binary for your [distribution](https://github.com/replaygaming/go-metrics/releases)
 
-```shell
-./bin/metrics_linux_amd64 -h
+### Building from source
 
-Usage of ./bin/metrics_linux_amd64:
-  -amplitude-api-key string
-        Amplitude API Key
-  -amqp-queue string
-        AMQP Queue name (default "metrics")
-  -amqp-url string
-        AMQP URL (default "amqp://guest:guest@localhost:5672/metrics")
-        
+####  Get project dependencies
+
+```shell
+export GOPATH=~/go
+go get github.com/replaygaming/go-metrics
+cd ~/go/src/github.com/replaygaming/go-metrics
+go get .
+```
+
+#### Compile
+
+```shell
+go build
+```
+
+#### Configuration
+
+Configuration is done using environment variables.
+
+```shell
+# AMQP URL (for example "amqp://guest:guest@127.0.0.1:5672/metrics")
+AMQP_URL
+
+# AMQP Queue name (for example "metrics")
+AMQP_QUEUE
+
+# Amplitude API key
+AMPLITUDE_API_KEY
+```
+
+#### Run
+
+```shell
+AMQP_URL=<url> AMQP_QUEUE=<queue> AMPLITUDE_API_KEY=<key> ./go-metrics
 ```
 
 ## Configure RabbitMQ
 
 ### Install `rabbitmq` and `rabbitmqadmin`
 
-Download and installation guide from [RabbitMQ site](https://www.rabbitmq.com/download.html).
-rabbitmqadmin is binary, found as part of [rabbitmq-management](https://github.com/rabbitmq/rabbitmq-management) project.
+Download and install RabbitMQ from [official RabbitMQ site](https://www.rabbitmq.com/download.html).
+rabbitmqadmin is binary, found as part of [rabbitmq-management project](https://github.com/rabbitmq/rabbitmq-management).
 
-### Enable the management plugin:
+### Enable RabbitMQ Management plugin:
 
+Enable rabbitmq_management plugin.
+
+```shell
     [sudo] rabbitmq-plugins enable rabbitmq_management
+```
 
 Then (re)start the rabbitmq daemon.
 
+```shell
     [sudo] sudo rabbitmqctl stop
     [sudo] rabbitmq-server -detached
+```
 
 Declare the host and exchange for the metrics
 
-    rabbitmqadmin declare vhost name=metrics
-    rabbitmqadmin declare permission vhost=metrics user=guest configure=".*" write=".*" read=".*"
-    rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=true
+```shell
+rabbitmqadmin declare vhost name=metrics
+rabbitmqadmin declare permission vhost=metrics user=guest configure=".*" write=".*" read=".*"
+rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=true
+```
 
-## Contribuing
+## Development Resources
 
-### Install `go`
+### Go
 
-Follow the instructions at [Golang.org](https://golang.org). **DO NOT** install using your distro pkg manager.
+- [Go Installation](https://golang.org/doc/install)
+- [Go Code Documentation](https://golang.org/doc/code.html)
+- [Go + Docker](https://blog.golang.org/docker)
 
-### Get project dependencies
+### Docker
 
-    go get .
+- [Docker Installation](https://docs.docker.com/engine/installation/)
+- [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
 
-### Running 
+### Codeship
 
-    go build
-    ./go-metrics
+- [Codeship Steps Configuration](https://codeship.com/documentation/docker/steps/)
+- [Codeship Services Configuration](https://codeship.com/documentation/docker/services/)
+
+## Contributing
+
+We would love to see contributions from the community. Please feel free to raise an issue or send your PR to this Github project.
