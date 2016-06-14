@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	amqp "github.com/replaygaming/amqp-consumer"
+	amqpConsumer "github.com/replaygaming/amqp-consumer"
 	"github.com/replaygaming/go-metrics/internal/amplitude"
 )
 
@@ -45,20 +45,18 @@ func main() {
 
 	// Start consumer queue
 	// NewConsumer(amqpURI, exchange, exchangeType, queueName, key, ctag string) (*Consumer, error)
-	c, err := amqp.NewConsumer(amqpURL, "metrics_ex", "fanout", amqpQueue, "", "metrics")
+	consumer, err := amqpConsumer.NewConsumer(amqpURL, "metrics_ex", "fanout", amqpQueue, "", "metrics")
 	if err != nil {
 		fatal("AMQP Consumer Failed", err)
 	}
 
-	messages, err := c.Consume(amqpQueue)
+	messages, err := consumer.Consume(amqpQueue)
 	if err != nil {
 		fatal("AMQP Queue Failed", err)
 	}
 
-	// Start event adapters
-	a := amplitude.NewClient(amplitudeAPIKey)
-
-	adapters := []Adapter{a}
+	amplitudeClient := amplitude.NewClient(amplitudeAPIKey)
+	adapters := []Adapter{amplitudeClient}
 	channels := make([]chan<- []byte, len(adapters))
 
 	for i, a := range adapters {
@@ -78,5 +76,6 @@ func main() {
 		}
 		m.Ack(false)
 	}
-	c.Done <- nil
+
+	consumer.Done <- nil
 }
