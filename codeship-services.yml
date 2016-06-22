@@ -1,0 +1,16 @@
+gcr_dockercfg:
+  image: codeship/gcr-dockercfg-generator
+  add_docker: true
+  encrypted_env_file: google_deployment.env.encrypted
+
+compile:
+  build:
+    image: us.gcr.io/replay-gaming/go-metrics-compile
+    dockerfile_path: Dockerfile.build
+  volumes:
+    - ./tmp:/artifacts
+
+dist:
+  build:
+    image: us.gcr.io/replay-gaming/go-metrics
+    dockerfile_path: Dockerfile.dist

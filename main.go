@@ -1,11 +1,10 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"os"
 
-	amqp "github.com/replaygaming/amqp-consumer"
+	amqpConsumer "github.com/replaygaming/amqp-consumer"
 	"github.com/replaygaming/go-metrics/internal/amplitude"
 )
 
@@ -17,48 +16,68 @@ type Adapter interface {
 	Start() (chan<- []byte, error)
 }
 
+var (
+	amqpURL         string
+	amqpQueue       string
+	amplitudeAPIKey string
+)
+
+func warn(message string, err error) {
+	logger.Printf("[WARN] %s: %s", message, err)
+}
+
+func fatal(message string, err error) {
+	logger.Fatalf("[FATAL] %s: %s", message, err)
+}
+
+func init() {
+	logger.Printf("[INFO] Initializing App")
+
+	amqpURL = os.Getenv("AMQP_URL")
+	amqpQueue = os.Getenv("AMQP_QUEUE")
+	amplitudeAPIKey = os.Getenv("AMPLITUDE_API_KEY")
+
+	logger.Printf("[INFO] INIT - AMPQ URL = %s, AMQP Queue = %s, Amplitude API Key = %s", amqpURL, amqpQueue, amplitudeAPIKey)
+}
+
 func main() {
-	var (
-		amqpURL = flag.String("amqp-url",
-			"amqp://guest:guest@localhost:5672/metrics", "AMQP URL")
-		amqpQueue       = flag.String("amqp-queue", "metrics", "AMQP Queue name")
-		amplitudeAPIKey = flag.String("amplitude-api-key", "", "Amplitude API Key")
-	)
-	flag.Parse()
+	logger.Printf("[INFO] Starting Service")
 
 	// Start consumer queue
-	c, err := amqp.NewConsumer(*amqpURL, "metrics_ex", "fanout", *amqpQueue, "",
-		"metrics")
+	// NewConsumer(amqpURI, exchange, exchangeType, queueName, key, ctag string) (*Consumer, error)
+	consumer, err := amqpConsumer.NewConsumer(amqpURL, "metrics_ex", "fanout", amqpQueue, "", "metrics")
 	if err != nil {
-		logger.Fatalf("[FATAL] AMQP consumer failed %s", err)
-	}
-	messages, err := c.Consume(*amqpQueue)
-	if err != nil {
-		logger.Fatalf("[FATAL] AMQP queue failed %s", err)
+		fatal("AMQP Consumer Failed", err)
 	}
 
-	// Start event adapters
-	a := amplitude.NewClient(*amplitudeAPIKey)
+	// Start consuming messages from queue
+	messages, err := consumer.Consume(amqpQueue)
+	if err != nil {
+		fatal("AMQP Queue Failed", err)
+	}
 
-	adapters := []Adapter{a}
-	chans := make([]chan<- []byte, len(adapters))
+	// Configure Amplitude client and adapter channels
+	amplitudeClient := amplitude.NewClient(amplitudeAPIKey)
+	adapters := []Adapter{amplitudeClient}
+	channels := make([]chan<- []byte, len(adapters))
 
 	for i, a := range adapters {
 		c, err := a.Start()
 		if err != nil {
 			logger.Fatalf("[FATAL] Adapter failed to start %s", err)
 		}
-		chans[i] = c
+		channels[i] = c
 	}
 
-	logger.Printf("[INFO] Starting metrics service %s", os.Args[1:])
+	logger.Printf("[INFO] Service Started")
 
 	// Listen for incoming events
 	for m := range messages {
-		for _, c := range chans {
+		for _, c := range channels {
 			c <- m.Body
 		}
 		m.Ack(false)
 	}
-	c.Done <- nil
+
+	consumer.Done <- nil
 }

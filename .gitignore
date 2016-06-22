@@ -1,6 +1,9 @@
 metrics
 bin
 
+/**/google_deployment.env
+codeship.aes
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -9,6 +12,7 @@ bin
 # Folders
 _obj
 _test
+tmp
 
 # Architecture specific extensions/prefixes
 *.[568vq]
