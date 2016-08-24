@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+class Provision
+  class << self
+    def call
+      ensure_secrets
+      ensure_deployment
+      puts "Metrics provisioned successfully"
+    end
+
+    def ensure_secrets
+      ensure_pubsub
+      ensure_metrics
+    end
+
+    def ensure_pubsub
+      return if Kernel.system(*%W[kubectl get secret/pubsub -o name], err: :out, out: "/dev/null")
+
+      abort "PubSub secrets are not configured. Make sure you have them provisioned from the infrastructure repository."
+    end
+
+    def ensure_metrics
+      return if Kernel.system(*%W[kubectl get secret/metrics -o name], err: :out, out: "/dev/null")
+
+      abort "Metrics secrets are not configured. Make sure you have them provisioned from the infrastructure repository."
+    end
+
+    def ensure_deployment
+      deployment_file = File.join(File.expand_path("..", __FILE__), "deployment.yaml")
+      Kernel.system(*%W[kubectl apply -f #{deployment_file}], out: "/dev/null")
+    end
+  end
+end
+
+Provision.call
