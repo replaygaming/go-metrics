@@ -25,6 +25,10 @@ spec:
               key: project-id
         - name: PUBSUB_KEYFILE
           value: /etc/pubsub/keyfile.json
+        volumeMounts:
+          - name: pubsub-secret
+            readOnly: true
+            mountPath: /etc/pubsub
         resources:
           limits:
             cpu: 0.1
