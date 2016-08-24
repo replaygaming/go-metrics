@@ -1,5 +1,5 @@
 # Game metrics service
-[![Build Status](https://semaphoreci.com/api/v1/projects/dba15a7d-a543-4860-b8c0-a6b64d15b840/563329/shields_badge.svg)](https://semaphoreci.com/paulgould/go-metrics) [![Coverage Status](https://coveralls.io/repos/replaygaming/go-metrics/badge.svg?branch=master&service=github)](https://coveralls.io/github/replaygaming/go-metrics?branch=master)
+[ ![Codeship Status for replaygaming/go-metrics](https://codeship.com/projects/2d93ed00-10a6-0134-1a45-32602de4173e/status?branch=kubernetes/master)](https://codeship.com/projects/157065)(https://semaphoreci.com/paulgould/go-metrics) [![Coverage Status](https://coveralls.io/repos/replaygaming/go-metrics/badge.svg?branch=master&service=github)](https://coveralls.io/github/replaygaming/go-metrics?branch=master)
 
 Translates Replay Poker events and forward them to 3rd-party APIs
 
@@ -9,8 +9,6 @@ Translates Replay Poker events and forward them to 3rd-party APIs
 
 ## Usage
 
-### Pre-built Binary
-Get the latest binary for your [distribution](https://github.com/replaygaming/go-metrics/releases)
 
 ### Building from source
 
@@ -20,7 +18,7 @@ Get the latest binary for your [distribution](https://github.com/replaygaming/go
 export GOPATH=~/go
 go get github.com/replaygaming/go-metrics
 cd ~/go/src/github.com/replaygaming/go-metrics
-go get .
+go get
 ```
 
 #### Compile
@@ -34,50 +32,20 @@ go build
 Configuration is done using environment variables.
 
 ```shell
-# AMQP URL (for example "amqp://guest:guest@127.0.0.1:5672/metrics")
-AMQP_URL
+# Topic (defaults to "metrics")
+export METRICS_TOPIC="my_topic"
 
-# AMQP Queue name (for example "metrics")
-AMQP_QUEUE
+# Subscription (defaults to "metrics_workers")
+export METRICS_SUBSCRIPTION="my_subscription"
 
-# Amplitude API key
-AMPLITUDE_API_KEY
+# Amplitude API key. Required
+export AMPLITUDE_API_KEY="asdf1234"
 ```
 
 #### Run
 
 ```shell
-AMQP_URL=<url> AMQP_QUEUE=<queue> AMPLITUDE_API_KEY=<key> ./go-metrics
-```
-
-## Configure RabbitMQ
-
-### Install `rabbitmq` and `rabbitmqadmin`
-
-Download and install RabbitMQ from [official RabbitMQ site](https://www.rabbitmq.com/download.html).
-rabbitmqadmin is binary, found as part of [rabbitmq-management project](https://github.com/rabbitmq/rabbitmq-management).
-
-### Enable RabbitMQ Management plugin:
-
-Enable rabbitmq_management plugin.
-
-```shell
-    [sudo] rabbitmq-plugins enable rabbitmq_management
-```
-
-Then (re)start the rabbitmq daemon.
-
-```shell
-    [sudo] sudo rabbitmqctl stop
-    [sudo] rabbitmq-server -detached
-```
-
-Declare the host and exchange for the metrics
-
-```shell
-rabbitmqadmin declare vhost name=metrics
-rabbitmqadmin declare permission vhost=metrics user=guest configure=".*" write=".*" read=".*"
-rabbitmqadmin -V metrics declare exchange name=metrics_ex type=fanout durable=true
+./go-metrics
 ```
 
 ## Development Resources
