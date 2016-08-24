@@ -1,9 +1,8 @@
-FROM alpine:3.2
+FROM alpine:3.4
 
 # Installing go from OS package manager to make sure all the
 # dependencies are taken care of by the OS package manager.
-RUN apk add --update go
-RUN apk add --update git
+RUN apk add -U --no-cache go git
 
 ENV GOPATH /go
 
