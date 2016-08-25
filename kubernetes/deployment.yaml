@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: metrics
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: metrics
+    spec:
+      containers:
+      - name: metrics
+        image: us.gcr.io/replay-gaming/go-metrics:latest
+        env:
+        - name: AMPLITUDE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: metrics
+              key: amplitude-api-key
+        - name: PUBSUB_PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              name: pubsub
+              key: project-id
+        - name: PUBSUB_KEYFILE
+          value: /etc/pubsub/keyfile.json
+        volumeMounts:
+          - name: pubsub-secret
+            readOnly: true
+            mountPath: /etc/pubsub
+        resources:
+          limits:
+            cpu: 0.1
+        imagePullPolicy: Always
+      volumes:
+        - name: pubsub-secret
+          secret:
+            secretName: pubsub
