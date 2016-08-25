@@ -1,11 +1,10 @@
 package main
 
 import (
+	cons "github.com/replaygaming/consumer"
+	"github.com/replaygaming/go-metrics/internal/amplitude"
 	"log"
 	"os"
-
-	amqpConsumer "github.com/replaygaming/amqp-consumer"
-	"github.com/replaygaming/go-metrics/internal/amplitude"
 )
 
 var logger = log.New(os.Stdout, "[METRICS] ", 0)
@@ -17,8 +16,8 @@ type Adapter interface {
 }
 
 var (
-	amqpURL         string
-	amqpQueue       string
+	topic           string
+	subscription    string
 	amplitudeAPIKey string
 )
 
@@ -26,34 +25,46 @@ func warn(message string, err error) {
 	logger.Printf("[WARN] %s: %s", message, err)
 }
 
-func fatal(message string, err error) {
-	logger.Fatalf("[FATAL] %s: %s", message, err)
+func fatal(message string, v ...interface{}) {
+	logger.Fatalf("[FATAL] "+message, v...)
+}
+
+func info(message string, v ...interface{}) {
+	logger.Printf("[INFO] "+message, v...)
+
 }
 
 func init() {
-	logger.Printf("[INFO] Initializing App")
+	info("Initializing App")
 
-	amqpURL = os.Getenv("AMQP_URL")
-	amqpQueue = os.Getenv("AMQP_QUEUE")
+	topic = os.Getenv("METRICS_TOPIC")
+	if topic == "" {
+		topic = "metrics"
+	}
+
+	subscription = os.Getenv("METRICS_SUBSCRIPTION")
+	if subscription == "" {
+		subscription = "metrics_workers"
+	}
+
 	amplitudeAPIKey = os.Getenv("AMPLITUDE_API_KEY")
+	if amplitudeAPIKey == "" {
+		fatal("Amplitude API Key not provided")
+	}
 
-	logger.Printf("[INFO] INIT - AMPQ URL = %s, AMQP Queue = %s, Amplitude API Key = %s", amqpURL, amqpQueue, amplitudeAPIKey)
+	info("INIT - Topic = %s, Subscription = %s, Amplitude API Key = %s", topic, subscription, amplitudeAPIKey)
 }
 
 func main() {
-	logger.Printf("[INFO] Starting Service")
+	info("Starting Service")
 
 	// Start consumer queue
-	// NewConsumer(amqpURI, exchange, exchangeType, queueName, key, ctag string) (*Consumer, error)
-	consumer, err := amqpConsumer.NewConsumer(amqpURL, "metrics_ex", "fanout", amqpQueue, "", "metrics")
-	if err != nil {
-		fatal("AMQP Consumer Failed", err)
-	}
+	consumer := cons.NewConsumer(topic, subscription)
 
 	// Start consuming messages from queue
-	messages, err := consumer.Consume(amqpQueue)
+	messages, err := consumer.Consume()
 	if err != nil {
-		fatal("AMQP Queue Failed", err)
+		fatal("Failed to consume messages: %s", err)
 	}
 
 	// Configure Amplitude client and adapter channels
@@ -64,20 +75,18 @@ func main() {
 	for i, a := range adapters {
 		c, err := a.Start()
 		if err != nil {
-			logger.Fatalf("[FATAL] Adapter failed to start %s", err)
+			fatal("Adapter failed to start: %s", err)
 		}
 		channels[i] = c
 	}
 
-	logger.Printf("[INFO] Service Started")
+	info("Service Started")
 
 	// Listen for incoming events
 	for m := range messages {
 		for _, c := range channels {
-			c <- m.Body
+			c <- m.Data()
 		}
-		m.Ack(false)
+		m.Done(true)
 	}
-
-	consumer.Done <- nil
 }
