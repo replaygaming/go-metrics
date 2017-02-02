@@ -1,11 +1,23 @@
 #!/usr/bin/env ruby
 
+require "erb"
+require "open3"
+
 class Provision
   class << self
     def call
+      help if ARGV[0] == "-h" || ARGV[0] == "--help"
+
       ensure_secrets
       ensure_deployment
-      puts "Metrics provisioned successfully"
+      puts "Metrics provisioned successfully for environment '#{environment}'"
+    end
+
+    def help
+      puts "Usage: provision [environment]"
+      puts
+      puts "Environment defaults to 'staging'"
+      exit 1
     end
 
     def ensure_secrets
@@ -26,8 +38,27 @@ class Provision
     end
 
     def ensure_deployment
-      deployment_file = File.join(File.expand_path("..", __FILE__), "deployment.yaml")
-      Kernel.system(*%W[kubectl apply -f #{deployment_file}], out: "/dev/null")
+      deployment_file = File.join(File.expand_path("..", __FILE__), "deployment.yaml.erb")
+      resource = ERB.new(File.read(deployment_file)).result(binding)
+      kube_apply(resource) || abort("Error applying deployment")
+    end
+
+    def environment
+      ARGV[0] || "staging"
+    end
+
+    def kube_apply(resource)
+      Open3.popen2e("kubectl apply --record=true -f -") do |stdin, out_err, wait_thr|
+        stdin.write resource
+        stdin.close
+        output = out_err.read
+        if wait_thr.value.success?
+          true
+        else
+          puts output
+          false
+        end
+      end
     end
   end
 end
