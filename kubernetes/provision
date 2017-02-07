@@ -14,7 +14,7 @@ class Provision
     end
 
     def help
-      puts "Usage: provision [environment]"
+      puts "Usage: provision [environment] [topic_name] [subscription_name]"
       puts
       puts "Environment defaults to 'staging'"
       exit 1
@@ -45,6 +45,32 @@ class Provision
 
     def environment
       ARGV[0] || "staging"
+    end
+
+    def topic_name
+      return ARGV[1] if ARGV[1]
+
+      case environment
+      when "staging"
+        "metrics-staging"
+      when "production"
+        "metrics"
+      else
+        abort("Don't know what topic name to use for this environment. Please provide one. See --help for more information")
+      end
+    end
+
+    def subscription_name
+      return ARGV[2] if ARGV[2]
+
+      case environment
+      when "staging"
+        "metrics_workers_staging"
+      when "production"
+        "metrics_workers"
+      else
+        abort("Don't know what subscription name to use for this environment. Please provide one. See --help for more information")
+      end
     end
 
     def kube_apply(resource)
