@@ -29,6 +29,10 @@ spec:
               key: project-id
         - name: PUBSUB_KEYFILE
           value: /etc/pubsub/keyfile.json
+        - name: METRICS_TOPIC
+          value: <%= topic_name %>
+        - name: METRICS_SUBSCRIPTION
+          value: <%= subscription_name %>
         volumeMounts:
           - name: pubsub-secret
             readOnly: true
