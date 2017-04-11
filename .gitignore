@@ -1,5 +1,6 @@
 metrics
 bin
+vendor
 
 /**/google_deployment.env
 codeship.aes
