@@ -2,7 +2,7 @@ package main
 
 import (
 	cons "github.com/replaygaming/consumer"
-	"github.com/replaygaming/go-metrics/internal/amplitude"
+	"./internal/amplitude"
 	"log"
 	"os"
 )
@@ -31,7 +31,6 @@ func fatal(message string, v ...interface{}) {
 
 func info(message string, v ...interface{}) {
 	logger.Printf("[INFO] "+message, v...)
-
 }
 
 func init() {
@@ -61,6 +60,10 @@ func main() {
 	// Start consumer queue
 	consumer := cons.NewConsumer(topic, subscription)
 
+	if !consumer.Alive() {
+		fatal("PubSub consumer is not alive. Check PubSub connection.")
+	}
+
 	// Start consuming messages from queue
 	messages, err := consumer.Consume()
 	if err != nil {
@@ -84,6 +87,10 @@ func main() {
 
 	// Listen for incoming events
 	for m := range messages {
+		if !consumer.Alive() {
+			fatal("PubSub consumer is not alive. Check PubSub connection.")
+		}
+
 		for _, c := range channels {
 			c <- m.Data()
 		}
