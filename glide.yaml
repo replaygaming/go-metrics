@@ -2,6 +2,7 @@ package: .
 import:
 - package: github.com/replaygaming/amplitude
 - package: github.com/replaygaming/consumer
+  version: update-pubsub-api
 - package: github.com/replaygaming/go-metrics
   version: ^0.5.0-rc2
   subpackages:

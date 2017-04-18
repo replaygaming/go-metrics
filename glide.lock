@@ -1,11 +1,12 @@
-hash: 88c592a7dfec818fe9a47615e63cfc1e0a84cdd9068afaa26b58a08c4f2e50f2
-updated: 2017-04-11T16:55:30.533019143+05:30
+hash: 0d871255bbbb7b6a79a8230c0896b918806d6e9f4458fd67b47997ccb9cf3557
+updated: 2017-04-18T20:24:59.953052717+05:30
 imports:
 - name: cloud.google.com/go
-  version: 1180f1d0d05f61a65f39b3b9be37815493758d2f
+  version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
   subpackages:
   - compute/metadata
   - iam
+  - internal
   - internal/version
   - pubsub
   - pubsub/apiv1
@@ -24,7 +25,7 @@ imports:
 - name: github.com/replaygaming/amplitude
   version: b98b7a35c7cbad8ea454630f6e003603521056c0
 - name: github.com/replaygaming/consumer
-  version: 33f730ad2bd4d175c478503016ab80c6d424caf3
+  version: d6f20d211ffc067fc47060ee1a1097eb3d958e8c
 - name: github.com/replaygaming/go-metrics
   version: 0d88959872adaa23f2ca8f6a79a5005950d3b421
   subpackages:
