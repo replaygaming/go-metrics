@@ -1,4 +1,4 @@
-package: .
+package: github.com/replaygaming/go-metrics
 import:
 - package: cloud.google.com/go/pubsub
   version: ed63fb27efcf32e25fe7837e4662457d3da4c4f2
