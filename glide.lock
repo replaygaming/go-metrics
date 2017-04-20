@@ -1,12 +1,11 @@
-hash: 0d871255bbbb7b6a79a8230c0896b918806d6e9f4458fd67b47997ccb9cf3557
-updated: 2017-04-18T20:24:59.953052717+05:30
+hash: c8ee02699d21366ce83eceb283c2e286e8676d4d13518670e84e6d2051e1ff20
+updated: 2017-04-20T15:39:15.196384358+05:30
 imports:
 - name: cloud.google.com/go
-  version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
+  version: ed63fb27efcf32e25fe7837e4662457d3da4c4f2
   subpackages:
   - compute/metadata
   - iam
-  - internal
   - internal/version
   - pubsub
   - pubsub/apiv1
@@ -26,12 +25,8 @@ imports:
   version: b98b7a35c7cbad8ea454630f6e003603521056c0
 - name: github.com/replaygaming/consumer
   version: d6f20d211ffc067fc47060ee1a1097eb3d958e8c
-- name: github.com/replaygaming/go-metrics
-  version: 0d88959872adaa23f2ca8f6a79a5005950d3b421
-  subpackages:
-  - internal/amplitude
 - name: golang.org/x/net
-  version: d1e1b351919c6738fdeb9893d5c998b161464f0c
+  version: 5602c733f70afc6dcec6766be0d5034d4c4f14de
   subpackages:
   - context
   - context/ctxhttp
@@ -42,25 +37,25 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/oauth2
-  version: 7fdf09982454086d5570c7db3e11f360194830ca
+  version: a6bd8cefa1811bd24b86f8902872e4e8225f74c4
   subpackages:
   - google
   - internal
   - jws
   - jwt
 - name: golang.org/x/sync
-  version: 5a06fca2c336a4b2b2fcb45702e8c47621b2aa2c
+  version: de49d9dcd27d4f764488181bea099dfe6179bcf0
   subpackages:
   - semaphore
 - name: golang.org/x/text
-  version: f4b4367115ec2de254587813edaa901bc1c723a8
+  version: 19e3104b43db45fca0303f489a9536087b184802
   subpackages:
   - secure/bidirule
   - transform
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/api
-  version: 48e49d1645e228d1c50c3d54fb476b2224477303
+  version: 0b0f5a5147930d092abd132cf09fafa23e8c3942
   subpackages:
   - googleapi/transport
   - internal
@@ -91,7 +86,7 @@ imports:
   - googleapis/rpc/status
   - protobuf/field_mask
 - name: google.golang.org/grpc
-  version: ff17eeb5f6e2112ef30f103d686fa725ee31202e
+  version: 6914ab1e338c92da4218a23d27fcd03d0ad78d46
   subpackages:
   - codes
   - credentials
