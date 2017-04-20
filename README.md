@@ -22,7 +22,6 @@ We use [`glide`](http://glide.sh/) package manager for go. [Install](https://gli
 
 Initialize and install dependencies
 
-    glide init			# generates glide.yaml
     glide install		# generates glide.lock
 
 Glide will install all your go project dependencies in `vendor/` directory.
