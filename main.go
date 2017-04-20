@@ -1,10 +1,11 @@
 package main
 
 import (
-	cons "github.com/replaygaming/consumer"
-	"./internal/amplitude"
 	"log"
 	"os"
+
+	cons "github.com/replaygaming/consumer"
+	"github.com/replaygaming/go-metrics/internal/amplitude"
 )
 
 var logger = log.New(os.Stdout, "[METRICS] ", 0)
