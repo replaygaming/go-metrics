@@ -17,4 +17,5 @@ ADD internal ./
 ADD glide.lock ./
 ADD glide.yaml ./
 
-RUN glide install && go build -v
+RUN glide install
+RUN go build -v
