@@ -7,6 +7,9 @@ RUN mkdir -p $GOPATH/src/github.com/replaygaming/go-eventsource
 
 WORKDIR /go/src/github.com/replaygaming/go-metrics
 
+RUN mkdir -p $GOPATH/bin
+ENV LGOBIN $GOPATH/bin
+ENV PATH $LGOBIN:$PATH
 RUN curl https://glide.sh/get | sh
 
 ADD *.go ./
