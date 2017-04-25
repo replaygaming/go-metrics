@@ -18,6 +18,8 @@ ENV SRCROOT /go/src/github.com/replaygaming/go-metrics
 
 WORKDIR ${SRCROOT}
 
+RUN git branch exit-when-error-on-pubsub-pull
+
 ADD *.go ${SRCROOT}
 ADD internal ${SRCROOT}
 ADD glide.lock ${SRCROOT}
