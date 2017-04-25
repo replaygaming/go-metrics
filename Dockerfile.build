@@ -5,17 +5,19 @@ ENV GOPATH /go
 RUN apk add -U --no-cache go git curl openssl
 RUN mkdir -p /go/src/github.com/replaygaming/go-metrics
 
-WORKDIR /go/src/github.com/replaygaming/go-metrics
-
 RUN mkdir -p $GOPATH/bin
 ENV LGOBIN $GOPATH/bin
 ENV PATH $LGOBIN:$PATH
 RUN curl https://glide.sh/get | sh
 
-ADD *.go ./
-ADD internal ./
-ADD glide.lock ./
-ADD glide.yaml ./
+ENV SRCPATH /go/src/github.com/replaygaming/go-metrics
+
+COPY *.go ${SRCPATH}
+COPY internal ${SRCPATH}/internal
+COPY glide.lock ${SRCPATH}
+COPY glide.yaml ${SRCPATH}
+
+WORKDIR ${SRCPATH}
 
 RUN glide install
 RUN go build -v
