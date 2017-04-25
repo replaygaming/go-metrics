@@ -3,7 +3,7 @@ FROM alpine:3.4
 ENV GOPATH /go
 
 RUN apk add -U --no-cache go git curl openssl
-RUN mkdir -p $GOPATH/src/github.com/replaygaming/go-metrics
+RUN mkdir -p /go/src/github.com/replaygaming/go-metrics
 
 WORKDIR /go/src/github.com/replaygaming/go-metrics
 
@@ -17,4 +17,4 @@ ADD internal ./
 ADD glide.lock ./
 ADD glide.yaml ./
 
-RUN glide install
+RUN glide install && go build -v
