@@ -20,4 +20,4 @@ COPY glide.yaml ${SRCPATH}
 WORKDIR ${SRCPATH}
 
 RUN glide install
-RUN go build -v
+RUN go install
