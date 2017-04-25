@@ -1,29 +1,17 @@
 FROM alpine:3.4
 
-# Installing go from OS package manager to make sure all the
-# dependencies are taken care of by the OS package manager.
-RUN apk add -U --no-cache go git curl openssl
-
 ENV GOPATH /go
-RUN mkdir -p $GOPATH/bin
-ENV LGOBIN $GOPATH/bin
-ENV PATH $LGOBIN:$PATH
 
-# Install 'glide' package manager for golang
+RUN apk add -U --no-cache go git curl openssl
+RUN mkdir -p $GOPATH/src/github.com/replaygaming/go-eventsource
+
+WORKDIR /go/src/github.com/replaygaming/go-metrics
+
 RUN curl https://glide.sh/get | sh
 
-RUN go get github.com/replaygaming/go-metrics
+ADD *.go ./
+ADD internal ./
+ADD glide.lock ./
+ADD glide.yaml ./
 
-ENV SRCROOT /go/src/github.com/replaygaming/go-metrics
-
-WORKDIR ${SRCROOT}
-
-RUN git branch exit-when-error-on-pubsub-pull
-
-ADD *.go ${SRCROOT}
-ADD internal ${SRCROOT}
-ADD glide.lock ${SRCROOT}
-ADD glide.yaml ${SRCROOT}
-
-RUN glide update \
-      && glide install
+RUN glide install
