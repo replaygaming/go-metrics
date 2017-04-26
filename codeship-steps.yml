@@ -1,5 +1,5 @@
 - service: compile
-  command: cp /go/src/github.com/replaygaming/go-metrics/go-metrics /artifacts
+  command: cp /go/bin/go-metrics /artifacts
   cached: true
   dockercfg_service: gcr_dockercfg
 
@@ -10,12 +10,6 @@
   service: dist
   type: parallel
   steps:
-  - type: push
-    image_name: us.gcr.io/replay-gaming/go-metrics
-    image_tag: "latest"
-    registry: https://us.gcr.io
-    dockercfg_service: gcr_dockercfg
-
   - type: push
     image_name: us.gcr.io/replay-gaming/go-metrics
     image_tag: "{{.Timestamp}}"

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: metrics
-        image: us.gcr.io/replay-gaming/go-metrics:latest
+        image: us.gcr.io/replay-gaming/go-metrics:<%= tag %>
         env:
         - name: AMPLITUDE_API_KEY
           valueFrom:

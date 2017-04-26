@@ -1,10 +1,11 @@
 package main
 
 import (
-	cons "github.com/replaygaming/consumer"
-	"github.com/replaygaming/go-metrics/internal/amplitude"
 	"log"
 	"os"
+
+	cons "github.com/replaygaming/consumer"
+	"github.com/replaygaming/go-metrics/internal/amplitude"
 )
 
 var logger = log.New(os.Stdout, "[METRICS] ", 0)
@@ -31,7 +32,6 @@ func fatal(message string, v ...interface{}) {
 
 func info(message string, v ...interface{}) {
 	logger.Printf("[INFO] "+message, v...)
-
 }
 
 func init() {
