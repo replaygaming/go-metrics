@@ -10,14 +10,12 @@ ENV LGOBIN $GOPATH/bin
 ENV PATH $LGOBIN:$PATH
 RUN curl https://glide.sh/get | sh
 
-ENV SRCPATH /go/src/github.com/replaygaming/go-metrics
+WORKDIR /go/src/github.com/replaygaming/go-metrics
 
-COPY *.go ${SRCPATH}
-COPY internal ${SRCPATH}/internal
-COPY glide.lock ${SRCPATH}
-COPY glide.yaml ${SRCPATH}
-
-WORKDIR ${SRCPATH}
+COPY *.go ./
+COPY internal ./internal
+COPY glide.lock ./
+COPY glide.yaml ./
 
 RUN glide install
 RUN go install
