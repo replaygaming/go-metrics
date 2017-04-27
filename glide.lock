@@ -1,11 +1,12 @@
-hash: 63168f328a2578a9f8fedcdf357fd9015149c5f73ed2de0cdfe72c582c8c19d3
-updated: 2017-04-26T17:27:16.60572746+05:30
+hash: e99953afe5adf164cd294593db42a88f804bd232231a1f6900ad6457eccf04e6
+updated: 2017-04-27T18:10:41.115297838+05:30
 imports:
 - name: cloud.google.com/go
-  version: ed63fb27efcf32e25fe7837e4662457d3da4c4f2
+  version: 2e6a95edb1071d750f6d7db777bf66cd2997af6c
   subpackages:
   - compute/metadata
   - iam
+  - internal
   - internal/version
   - pubsub
   - pubsub/apiv1
@@ -24,7 +25,7 @@ imports:
 - name: github.com/replaygaming/amplitude
   version: b98b7a35c7cbad8ea454630f6e003603521056c0
 - name: github.com/replaygaming/consumer
-  version: cd0da7478f0ec3def4c894610dec677faec347cb
+  version: c6ae46754438459bb9d35f7a91c7ac0181982326
 - name: golang.org/x/net
   version: 5602c733f70afc6dcec6766be0d5034d4c4f14de
   subpackages:
